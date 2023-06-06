@@ -3,6 +3,8 @@ import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 import 'dart:math' as math;
 
 import 'package:flutter_trip/dao/home_dao.dart';
+import 'package:flutter_trip/model/home_model.dart';
+import 'package:flutter_trip/widget/home_local_nav.dart';
 
 const APPBAR_MAX_SCROLL = 100;
 
@@ -20,11 +22,12 @@ List _imageList = [
 
 class _HomePageState extends State<HomePage> {
   double _appBarAlpha = 0;
-  String _result = "";
+  HomeModel? _homeModel;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xfff2fafa),
       body: Stack(
         children: [
           MediaQuery.removePadding(
@@ -53,10 +56,17 @@ class _HomePageState extends State<HomePage> {
                             );
                           },
                         )),
+                    Padding(
+                      padding:
+                          EdgeInsets.only(left: 7, top: 4, right: 7, bottom: 4),
+                      child: HomeLocalNav(
+                        localNavList: _homeModel?.localNavList,
+                      ),
+                    ),
                     Container(
                       height: 800,
                       child: ListTile(
-                        title: Text(_result),
+                        title: Text(_homeModel?.toString() ?? ""),
                       ),
                     )
                   ],
@@ -100,10 +110,10 @@ class _HomePageState extends State<HomePage> {
   void loadData() {
     HomeDao.fetch().then((value) {
       setState(() {
-        _result = value.toJson().toString();
+        _homeModel = value;
       });
     }).onError((error, stackTrace) {
-      _result = error.toString();
+      _homeModel = null;
     });
   }
 }
