@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 import 'dart:math' as math;
 
+import 'package:flutter_trip/dao/home_dao.dart';
+
 const APPBAR_MAX_SCROLL = 100;
 
 class HomePage extends StatefulWidget {
@@ -18,6 +20,7 @@ List _imageList = [
 
 class _HomePageState extends State<HomePage> {
   double _appBarAlpha = 0;
+  String _result = "";
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +56,7 @@ class _HomePageState extends State<HomePage> {
                     Container(
                       height: 800,
                       child: ListTile(
-                        title: Text("哈哈"),
+                        title: Text(_result),
                       ),
                     )
                   ],
@@ -85,6 +88,22 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _appBarAlpha = alpha;
       });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  void loadData() {
+    HomeDao.fetch().then((value) {
+      setState(() {
+        _result = value.toJson().toString();
+      });
+    }).onError((error, stackTrace) {
+      _result = error.toString();
     });
   }
 }
