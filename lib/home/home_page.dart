@@ -7,8 +7,9 @@ import 'dart:math' as math;
 
 import 'package:flutter_trip/dao/home_dao.dart';
 import 'package:flutter_trip/model/home_model.dart';
-import 'package:flutter_trip/widget/grid_nav.dart';
+import 'package:flutter_trip/widget/home_grid_nav.dart';
 import 'package:flutter_trip/widget/home_local_nav.dart';
+import 'package:flutter_trip/widget/home_sub_nav.dart';
 import 'package:flutter_trip/widget/webview.dart';
 
 const APPBAR_MAX_SCROLL = 100;
@@ -48,43 +49,11 @@ class _HomePageState extends State<HomePage> {
                 },
                 child: ListView(
                   children: [
-                    Visibility(
-                      visible: _homeModel?.bannerList?.isNotEmpty ?? false,
-                      child: Container(
-                        height: 220,
-                        child: Swiper(
-                          itemCount: _homeModel?.bannerList?.length ?? 0,
-                          autoplay: true,
-                          pagination: SwiperPagination(),
-                          itemBuilder: (BuildContext context, int index) {
-                            return Image.network(
-                              _homeModel!.bannerList![index].icon!,
-                              fit: BoxFit.fill,
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding:
-                          EdgeInsets.only(left: 7, top: 4, right: 7, bottom: 4),
-                      child: HomeLocalNav(
-                        localNavList: _homeModel?.localNavList,
-                      ),
-                    ),
-                    Padding(
-                      padding:
-                          EdgeInsets.only(left: 7, right: 7, top: 4, bottom: 4),
-                      child: GridNavView(gridNav: _homeModel?.gridNav),
-                    ),
-                    Container(
-                      height: 800,
-                      child: GestureDetector(
-                        child: ListTile(
-                          title: Text("1111"),
-                        ),
-                      ),
-                    )
+                    _createBanner(_homeModel?.bannerList),
+                    _createLocalNav(_homeModel?.localNavList),
+                    _createGridNav(_homeModel?.gridNav),
+                    _createSubNav(_homeModel?.subNavList),
+                    _createContent(),
                   ],
                 ),
               )),
@@ -138,5 +107,59 @@ class _HomePageState extends State<HomePage> {
     }).onError((error, stackTrace) {
       _homeModel = null;
     });
+  }
+
+  _createBanner(List<CommonModel>? bannerList) {
+    return Visibility(
+      visible: bannerList?.isNotEmpty ?? false,
+      child: Container(
+        height: 220,
+        child: Swiper(
+          itemCount: bannerList?.length ?? 0,
+          autoplay: true,
+          pagination: SwiperPagination(),
+          itemBuilder: (BuildContext context, int index) {
+            return Image.network(
+              bannerList![index].icon!,
+              fit: BoxFit.fill,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  _createLocalNav(List<CommonModel>? localNavList) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 7, top: 4, right: 7, bottom: 4),
+      child: HomeLocalNavView(
+        localNavList: localNavList,
+      ),
+    );
+  }
+
+  _createGridNav(GridNav? gridNav) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 7, right: 7, top: 0, bottom: 4),
+      child: HomeGridNavView(gridNav: gridNav),
+    );
+  }
+
+  _createSubNav(List<CommonModel>? subNavList) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 7, right: 7, top: 0, bottom: 4),
+      child: HomeSubNavView(subNavList: subNavList),
+    );
+  }
+
+  _createContent() {
+    return Container(
+      height: 800,
+      child: GestureDetector(
+        child: ListTile(
+          title: Text("1111"),
+        ),
+      ),
+    );
   }
 }

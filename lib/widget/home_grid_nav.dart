@@ -4,10 +4,10 @@ import 'package:flutter_trip/model/home_model.dart';
 
 import 'webview.dart';
 
-class GridNavView extends StatelessWidget {
+class HomeGridNavView extends StatelessWidget {
   final GridNav? gridNav;
 
-  GridNavView({this.gridNav});
+  HomeGridNavView({this.gridNav});
 
   @override
   Widget build(BuildContext context) {

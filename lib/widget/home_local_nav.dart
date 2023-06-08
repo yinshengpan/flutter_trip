@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_trip/model/home_model.dart';
 import 'package:flutter_trip/widget/webview.dart';
 
-class HomeLocalNav extends StatelessWidget {
+class HomeLocalNavView extends StatelessWidget {
   final List<CommonModel>? localNavList;
 
-  const HomeLocalNav({super.key, this.localNavList});
+  const HomeLocalNavView({super.key, this.localNavList});
 
   @override
   Widget build(BuildContext context) {
