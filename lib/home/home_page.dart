@@ -9,6 +9,7 @@ import 'package:flutter_trip/dao/home_dao.dart';
 import 'package:flutter_trip/model/home_model.dart';
 import 'package:flutter_trip/widget/home_grid_nav.dart';
 import 'package:flutter_trip/widget/home_local_nav.dart';
+import 'package:flutter_trip/widget/home_sales_box.dart';
 import 'package:flutter_trip/widget/home_sub_nav.dart';
 import 'package:flutter_trip/widget/webview.dart';
 
@@ -53,7 +54,7 @@ class _HomePageState extends State<HomePage> {
                     _createLocalNav(_homeModel?.localNavList),
                     _createGridNav(_homeModel?.gridNav),
                     _createSubNav(_homeModel?.subNavList),
-                    _createContent(),
+                    _createSalesBox(_homeModel?.salesBox),
                   ],
                 ),
               )),
@@ -152,14 +153,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _createContent() {
-    return Container(
-      height: 800,
-      child: GestureDetector(
-        child: ListTile(
-          title: Text("1111"),
-        ),
-      ),
+  _createSalesBox(SalesBoxModel? model) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 7, right: 7, top: 0, bottom: 4),
+      child: HomeSalesBoxView(salesBoxModel: model),
     );
   }
 }
