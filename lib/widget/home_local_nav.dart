@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_trip/model/home_model.dart';
+import 'package:flutter_trip/widget/webview.dart';
 
 class HomeLocalNav extends StatelessWidget {
   final List<CommonModel>? localNavList;
@@ -34,17 +36,29 @@ class HomeLocalNav extends StatelessWidget {
 
   Widget _item(BuildContext context, CommonModel model) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(context, CupertinoPageRoute(builder: (context) {
+          return WebView(
+            url: model.url ?? "",
+            title: model.title,
+            statusBarColor: model.statusBarColor,
+            hideAppBar: model.hideAppBar,
+          );
+        }));
+      },
       child: Column(
         children: [
           Image.network(
-            model.icon!,
+            model.icon ?? "",
             width: 32,
             height: 32,
           ),
           Text(
-            model.title!,
-            style: TextStyle(color: Colors.black, fontSize: 12),
+            model.title ?? "",
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 12,
+            ),
           )
         ],
       ),

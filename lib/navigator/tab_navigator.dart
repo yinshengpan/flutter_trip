@@ -16,6 +16,19 @@ class _TabNavigatorState extends State<TabNavigator> {
   final PageController _controller = PageController(initialPage: 0);
 
   @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_handlePageChanged);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.removeListener(_handlePageChanged);
+    _controller.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(
@@ -57,5 +70,11 @@ class _TabNavigatorState extends State<TabNavigator> {
       ),
       label: title,
     );
+  }
+
+  void _handlePageChanged() {
+    setState(() {
+      _currentIndex = _controller.page?.round() ?? 0;
+    });
   }
 }

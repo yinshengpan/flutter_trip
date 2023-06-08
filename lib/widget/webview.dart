@@ -1,3 +1,4 @@
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -7,14 +8,12 @@ class WebView extends StatefulWidget {
   final String? title;
   final String? statusBarColor;
   final bool? hideAppBar;
-  final bool? backForbid;
 
   WebView(
       {required this.url,
       this.title,
       this.statusBarColor = 'ffffff',
-      this.hideAppBar = false,
-      this.backForbid = false});
+      this.hideAppBar = false});
 
   @override
   _WebViewState createState() => _WebViewState();
@@ -32,9 +31,10 @@ class _WebViewState extends State<WebView> {
     ),
     android: AndroidInAppWebViewOptions(
       useHybridComposition: true,
-      scrollbarFadingEnabled: false,
       useWideViewPort: true,
       displayZoomControls: false,
+      verticalScrollbarThumbColor: Colors.transparent,
+      horizontalScrollbarThumbColor: Colors.transparent,
       mixedContentMode: AndroidMixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
       builtInZoomControls: true,
       allowFileAccess: true,
@@ -48,66 +48,80 @@ class _WebViewState extends State<WebView> {
 
   @override
   Widget build(BuildContext context) {
-    String statusColor = widget.statusBarColor ?? 'ffffff';
-    Color backColor = statusColor == 'ffffff' ? Colors.black : Colors.white;
+    String statusColorStr = widget.statusBarColor ?? 'ffffff';
+    Color backColor = statusColorStr == 'ffffff' ? Colors.black : Colors.white;
+    Color statusColor = Color(int.parse('0xff$statusColorStr'));
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Platform.isIOS
+          ? _createIOSContent(statusColor, backColor)
+          : _createContent(statusColor, backColor),
+    );
+  }
+
+  Widget _createIOSContent(Color statusColor, Color backColor) {
+    double startDragDx = 0;
+    double dragDx = 0;
+    int MIN_DRAG_BACK_DX = 100;
+    int START_DRAG_LIMIT = 120;
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onHorizontalDragStart: (details) {
+        startDragDx = details.globalPosition.dx;
+      },
+      onHorizontalDragUpdate: (details) {
+        dragDx += details.delta.dx;
+      },
+      onHorizontalDragEnd: (details) {
+        print("startDragDx $startDragDx dragDx $dragDx");
+        if (startDragDx < START_DRAG_LIMIT && dragDx > MIN_DRAG_BACK_DX) {
+          _handleBack();
+        }
+      },
+      child: _createContent(statusColor, backColor),
+    );
+  }
+
+  Widget _createContent(Color statusColor, Color backColor) {
     return Scaffold(
-      body: Column(
-        children: [
-          _appBar(Color(int.parse('0xff$statusColor')), backColor),
-          _createWebView()
-        ],
+      body: Container(
+        color: statusColor,
+        child: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              _appBar(statusColor, backColor),
+              _createWebView(),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  Widget _appBar(Color bgColor, Color backColor) {
+  Widget _appBar(Color statusColor, Color backColor) {
     if (widget.hideAppBar ?? false) {
       return Container();
     }
-    return Container(
-      decoration: BoxDecoration(color: bgColor),
-      height: 100,
-      child: FractionallySizedBox(
-        widthFactor: 1,
-        child: Stack(
-          children: [
-            Positioned(
-                top: 30,
-                bottom: 0,
-                child: GestureDetector(
-                  onTap: () {
-                    _controller?.canGoBack().then((canGoBack) {
-                      if (canGoBack) {
-                        _controller?.goBack();
-                      } else {
-                        Navigator.pop(context);
-                      }
-                    }).onError((error, stackTrace) {
-                      Navigator.pop(context);
-                    });
-                  },
-                  child: Container(
-                    alignment: Alignment.centerLeft,
-                    margin: EdgeInsets.only(left: 10),
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: backColor,
-                      size: 24,
-                    ),
-                  ),
-                )),
-            Positioned(
-                left: 0,
-                right: 0,
-                top: 30,
-                bottom: 0,
-                child: Center(
-                  child: Text(
-                    widget.title ?? _pageTitle ?? "",
-                    style: TextStyle(color: backColor, fontSize: 26),
-                  ),
-                ))
-          ],
+    return AppBar(
+      backgroundColor: statusColor,
+      centerTitle: true,
+      title: Text(
+        widget.title ?? _pageTitle ?? "",
+        style: TextStyle(
+          fontSize: 22,
+          color: backColor,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      leading: GestureDetector(
+        onTap: () {
+          _handleBack();
+        },
+        child: Icon(
+          Icons.arrow_back,
+          color: backColor,
+          size: 28,
         ),
       ),
     );
@@ -144,8 +158,9 @@ class _WebViewState extends State<WebView> {
           print("onProgressChanged progress $progress");
         },
         shouldOverrideUrlLoading: (controller, navigationAction) async {
-          print("shouldOverrideUrlLoading url ${navigationAction.request.url}");
-          return null;
+          String url = navigationAction.request.url.toString();
+          print("shouldOverrideUrlLoading url $url");
+          return NavigationActionPolicy.ALLOW;
         },
         onWebViewCreated: (controller) {
           _controller = controller;
@@ -156,4 +171,23 @@ class _WebViewState extends State<WebView> {
   }
 
   void _handleJsBridge() {}
+
+  void _handleBack() {
+    _controller?.canGoBack().then((canBack) {
+      print("_handleBack canBack $canBack");
+      if (canBack) {
+        _controller?.goBack();
+      } else {
+        Navigator.pop(context);
+      }
+    });
+  }
+
+  Future<bool> _onWillPop() async {
+    if (await _controller?.canGoBack() ?? false) {
+      await _controller?.goBack();
+      return Future(() => false);
+    }
+    return Future(() => true);
+  }
 }

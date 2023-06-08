@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 import 'dart:math' as math;
@@ -5,6 +6,7 @@ import 'dart:math' as math;
 import 'package:flutter_trip/dao/home_dao.dart';
 import 'package:flutter_trip/model/home_model.dart';
 import 'package:flutter_trip/widget/home_local_nav.dart';
+import 'package:flutter_trip/widget/webview.dart';
 
 const APPBAR_MAX_SCROLL = 100;
 
@@ -43,19 +45,23 @@ class _HomePageState extends State<HomePage> {
                 },
                 child: ListView(
                   children: [
-                    Container(
+                    Visibility(
+                      visible: _homeModel?.bannerList?.isNotEmpty ?? false,
+                      child: Container(
                         height: 220,
                         child: Swiper(
-                          itemCount: _imageList.length,
+                          itemCount: _homeModel?.bannerList?.length ?? 0,
                           autoplay: true,
                           pagination: SwiperPagination(),
                           itemBuilder: (BuildContext context, int index) {
                             return Image.network(
-                              _imageList[index],
+                              _homeModel!.bannerList![index].icon!,
                               fit: BoxFit.fill,
                             );
                           },
-                        )),
+                        ),
+                      ),
+                    ),
                     Padding(
                       padding:
                           EdgeInsets.only(left: 7, top: 4, right: 7, bottom: 4),
@@ -65,8 +71,18 @@ class _HomePageState extends State<HomePage> {
                     ),
                     Container(
                       height: 800,
-                      child: ListTile(
-                        title: Text(_homeModel?.toString() ?? ""),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(context,
+                              CupertinoPageRoute(builder: (context) {
+                            return WebView(
+                                url:
+                                    "https://apph5-pre.jf-mall.com/#/inviDetail?id\u003d472");
+                          }));
+                        },
+                        child: ListTile(
+                          title: Text(_homeModel?.toString() ?? ""),
+                        ),
                       ),
                     )
                   ],
@@ -75,12 +91,19 @@ class _HomePageState extends State<HomePage> {
           Opacity(
             opacity: _appBarAlpha,
             child: Container(
-              height: 80,
               decoration: BoxDecoration(color: Colors.white),
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: Text("首页"),
+              child: SafeArea(
+                child: Container(
+                  height: 54,
+                  child: Center(
+                    child: Text(
+                      "首页",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
