@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
@@ -5,6 +7,7 @@ import 'dart:math' as math;
 
 import 'package:flutter_trip/dao/home_dao.dart';
 import 'package:flutter_trip/model/home_model.dart';
+import 'package:flutter_trip/widget/grid_nav.dart';
 import 'package:flutter_trip/widget/home_local_nav.dart';
 import 'package:flutter_trip/widget/webview.dart';
 
@@ -69,19 +72,16 @@ class _HomePageState extends State<HomePage> {
                         localNavList: _homeModel?.localNavList,
                       ),
                     ),
+                    Padding(
+                      padding:
+                          EdgeInsets.only(left: 7, right: 7, top: 4, bottom: 4),
+                      child: GridNavView(gridNav: _homeModel?.gridNav),
+                    ),
                     Container(
                       height: 800,
                       child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(context,
-                              CupertinoPageRoute(builder: (context) {
-                            return WebView(
-                                url:
-                                    "https://apph5-pre.jf-mall.com/#/inviDetail?id\u003d472");
-                          }));
-                        },
                         child: ListTile(
-                          title: Text(_homeModel?.toString() ?? ""),
+                          title: Text("1111"),
                         ),
                       ),
                     )
