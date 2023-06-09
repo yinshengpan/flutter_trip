@@ -21,6 +21,9 @@ class HomeSalesBoxView extends StatelessWidget {
   }
 
   _createSalesBox(BuildContext context) {
+    if (salesBoxModel == null) {
+      return null;
+    }
     return Column(
       children: [
         _createSalesBoxTitle(context, salesBoxModel),

@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
@@ -38,15 +40,19 @@ class _HomePageState extends State<HomePage> {
       body: Stack(
         children: [
           MediaQuery.removePadding(
-              context: context,
-              removeTop: true,
-              child: NotificationListener(
-                onNotification: (scroll) {
-                  if (scroll is ScrollUpdateNotification && scroll.depth == 0) {
-                    _onScroll(scroll.metrics.pixels);
-                    return true;
-                  }
-                  return false;
+            context: context,
+            removeTop: true,
+            child: NotificationListener(
+              onNotification: (scroll) {
+                if (scroll is ScrollUpdateNotification && scroll.depth == 0) {
+                  _onScroll(scroll.metrics.pixels);
+                  return true;
+                }
+                return false;
+              },
+              child: EasyRefresh(
+                onRefresh: () {
+                  _refresh();
                 },
                 child: ListView(
                   children: [
@@ -57,27 +63,10 @@ class _HomePageState extends State<HomePage> {
                     _createSalesBox(_homeModel?.salesBox),
                   ],
                 ),
-              )),
-          Opacity(
-            opacity: _appBarAlpha,
-            child: Container(
-              decoration: BoxDecoration(color: Colors.white),
-              child: SafeArea(
-                child: Container(
-                  height: 54,
-                  child: Center(
-                    child: Text(
-                      "首页",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
               ),
             ),
           ),
+          _createAppBar(),
         ],
       ),
     );
@@ -97,17 +86,18 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    loadData();
+    _refresh();
   }
 
-  void loadData() {
-    HomeDao.fetch().then((value) {
+  _refresh() async {
+    try {
+      final homeModel = await HomeDao.fetchHome();
       setState(() {
-        _homeModel = value;
+        _homeModel = homeModel;
       });
-    }).onError((error, stackTrace) {
-      _homeModel = null;
-    });
+    } catch (e) {
+      print(e);
+    }
   }
 
   _createBanner(List<CommonModel>? bannerList) {
@@ -157,6 +147,29 @@ class _HomePageState extends State<HomePage> {
     return Padding(
       padding: const EdgeInsets.only(left: 7, right: 7, top: 0, bottom: 4),
       child: HomeSalesBoxView(salesBoxModel: model),
+    );
+  }
+
+  _createAppBar() {
+    return Opacity(
+      opacity: _appBarAlpha,
+      child: Container(
+        decoration: const BoxDecoration(color: Colors.white),
+        child: SafeArea(
+          child: Container(
+            height: 54,
+            child: Center(
+              child: Text(
+                "首页",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

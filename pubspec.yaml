@@ -38,6 +38,9 @@ dependencies:
   flutter_swiper_view: ^1.1.8
   dio: ^5.2.0
   flutter_inappwebview: ^5.7.2+3
+  easy_refresh: ^3.3.2+1
+  retrofit: ^4.0.1
+  json_annotation: ^4.8.1
 
 dev_dependencies:
   flutter_test:
@@ -49,6 +52,9 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  build_runner: ^2.4.5
+  json_serializable: ^6.7.0
+  retrofit_generator: ^7.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

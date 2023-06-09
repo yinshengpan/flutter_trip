@@ -10,13 +10,16 @@ class HomeLocalNavView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 64,
-      decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(6)),
-      child: Padding(
-        padding: EdgeInsets.all(7),
-        child: _items(context),
+    return Visibility(
+      visible: localNavList != null,
+      child: Container(
+        height: 64,
+        decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(6)),
+        child: Padding(
+          padding: EdgeInsets.all(7),
+          child: _items(context),
+        ),
       ),
     );
   }
