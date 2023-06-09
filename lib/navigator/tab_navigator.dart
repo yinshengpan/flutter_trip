@@ -3,6 +3,7 @@ import 'package:flutter_trip/home/home_page.dart';
 import 'package:flutter_trip/mine/mine_page.dart';
 import 'package:flutter_trip/search/search_page.dart';
 import 'package:flutter_trip/travel/travel_page.dart';
+import 'package:flutter_trip/widget/keep_alive_wrapper.dart';
 
 class TabNavigator extends StatefulWidget {
   @override
@@ -33,7 +34,12 @@ class _TabNavigatorState extends State<TabNavigator> {
     return Scaffold(
       body: PageView(
         controller: _controller,
-        children: [HomePage(), SearchPage(), TravelPage(), MinePage()],
+        children: [
+          KeepAliveWrapper(HomePage()),
+          KeepAliveWrapper(SearchPage()),
+          KeepAliveWrapper(TravelPage()),
+          KeepAliveWrapper(MinePage()),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
