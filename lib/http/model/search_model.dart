@@ -7,10 +7,12 @@ class SearchModel {
   SearchModel({
     this.data,
     this.resultPageUrl,
+    this.keyword,
   });
 
   List<SearchItem>? data;
   String? resultPageUrl;
+  String? keyword;
 
   factory SearchModel.fromJson(Map<String, dynamic> json) =>
       _$SearchModelFromJson(json);

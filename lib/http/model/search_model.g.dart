@@ -11,12 +11,14 @@ SearchModel _$SearchModelFromJson(Map<String, dynamic> json) => SearchModel(
           ?.map((e) => SearchItem.fromJson(e as Map<String, dynamic>))
           .toList(),
       resultPageUrl: json['resultPageUrl'] as String?,
+      keyword: json['keyword'] as String?,
     );
 
 Map<String, dynamic> _$SearchModelToJson(SearchModel instance) =>
     <String, dynamic>{
       'data': instance.data,
       'resultPageUrl': instance.resultPageUrl,
+      'keyword': instance.keyword,
     };
 
 SearchItem _$SearchItemFromJson(Map<String, dynamic> json) => SearchItem(

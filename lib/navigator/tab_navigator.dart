@@ -36,7 +36,7 @@ class _TabNavigatorState extends State<TabNavigator> {
         controller: _controller,
         children: [
           KeepAliveWrapper(HomePage()),
-          KeepAliveWrapper(SearchPage()),
+          const KeepAliveWrapper(SearchPage(hideLeft: true,)),
           KeepAliveWrapper(TravelPage()),
           KeepAliveWrapper(MinePage()),
         ],
