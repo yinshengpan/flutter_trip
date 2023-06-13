@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'home_api.dart';
+part of 'trip_api.dart';
 
 // **************************************************************************
 // RetrofitGenerator
@@ -8,12 +8,12 @@ part of 'home_api.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers
 
-class _HomeApi implements HomeApi {
-  _HomeApi(
+class _TripApi implements TripApi {
+  _TripApi(
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'https://www.devio.org/';
+    baseUrl ??= 'https://m.ctrip.com/restapi/h5api/';
   }
 
   final Dio _dio;
@@ -21,25 +21,26 @@ class _HomeApi implements HomeApi {
   String? baseUrl;
 
   @override
-  Future<HomeModel> getHome() async {
+  Future<SearchModel> doSearch(String? keyword) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'keyword': keyword};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final Map<String, dynamic>? _data = null;
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<HomeModel>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<SearchModel>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
     )
             .compose(
               _dio.options,
-              '/io/flutter_app/json/home_page.json',
+              '/globalsearch/search?source=mobileweb&action=autocomplete&contentType=json',
               queryParameters: queryParameters,
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = HomeModel.fromJson(_result.data!);
+    final value = SearchModel.fromJson(_result.data!);
     return value;
   }
 

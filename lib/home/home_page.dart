@@ -2,10 +2,10 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
+import 'package:flutter_trip/http/dao/crazy_dao.dart';
+import 'package:flutter_trip/http/model/home_model.dart';
 import 'dart:math' as math;
 
-import 'package:flutter_trip/dao/home_dao.dart';
-import 'package:flutter_trip/model/home_model.dart';
 import 'package:flutter_trip/widget/home_grid_nav.dart';
 import 'package:flutter_trip/widget/home_local_nav.dart';
 import 'package:flutter_trip/widget/home_sales_box.dart';
@@ -81,7 +81,7 @@ class _HomePageState extends State<HomePage> {
 
   _refresh() async {
     try {
-      final homeModel = await HomeDao.fetchHome();
+      final homeModel = await CrazyDao.fetchHome();
       setState(() {
         _homeModel = homeModel;
       });

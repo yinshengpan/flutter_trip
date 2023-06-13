@@ -62,7 +62,8 @@ class GridNav {
     this.travel,
   });
 
-  factory GridNav.fromJson(Map<String, dynamic> json) => _$GridNavFromJson(json);
+  factory GridNav.fromJson(Map<String, dynamic> json) =>
+      _$GridNavFromJson(json);
 
   GridNavItem? hotel;
   GridNavItem? flight;

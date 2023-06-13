@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_trip/model/home_model.dart';
+import 'package:flutter_trip/http/model/home_model.dart';
 import 'package:flutter_trip/widget/webview.dart';
 import 'dart:math' as math;
 

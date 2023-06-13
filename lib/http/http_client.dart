@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_trip/api/home_api.dart';
+import 'package:flutter_trip/http/api/crazy_api.dart';
+import 'package:flutter_trip/http/api/trip_api.dart';
 
 class HttpClient {
   static final HttpClient _httpClient = HttpClient._internal();
@@ -19,7 +20,11 @@ class HttpClient {
 
   static HttpClient get instance => HttpClient();
 
-  HomeApi getHomeApi() {
-    return HomeApi(_dio);
+  CrazyApi getCrazyApi() {
+    return CrazyApi(_dio);
+  }
+
+  TripApi getTripApi() {
+    return TripApi(_dio);
   }
 }
