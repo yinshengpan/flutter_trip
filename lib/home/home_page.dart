@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +10,7 @@ import 'package:flutter_trip/widget/home_grid_nav.dart';
 import 'package:flutter_trip/widget/home_local_nav.dart';
 import 'package:flutter_trip/widget/home_sales_box.dart';
 import 'package:flutter_trip/widget/home_sub_nav.dart';
-import 'package:flutter_trip/widget/webview.dart';
+import 'package:flutter_trip/widget/search_view.dart';
 
 const APPBAR_MAX_SCROLL = 100;
 
@@ -21,13 +18,6 @@ class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
-
-List _imageList = [
-  "https://picsum.photos/250?image=9",
-  "http://www.devio.org/img/avatar.png",
-  "https://picsum.photos/250?image=9",
-  "http://www.devio.org/img/avatar.png"
-];
 
 class _HomePageState extends State<HomePage> {
   double _appBarAlpha = 0;
@@ -151,25 +141,42 @@ class _HomePageState extends State<HomePage> {
   }
 
   _createAppBar() {
-    return Opacity(
-      opacity: _appBarAlpha,
-      child: Container(
-        decoration: const BoxDecoration(color: Colors.white),
-        child: SafeArea(
+    return Column(
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                colors: [Color(0x66000000), Colors.transparent],
+                end: Alignment.bottomCenter,
+                begin: Alignment.topCenter),
+          ),
           child: Container(
-            height: 54,
-            child: Center(
-              child: Text(
-                "首页",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                ),
+            padding: const EdgeInsets.only(bottom: 6),
+            decoration: BoxDecoration(
+              color:
+                  Color.fromARGB((_appBarAlpha * 255).toInt(), 255, 255, 255),
+            ),
+            child: SafeArea(
+              child: SearchView(
+                searchType:
+                    _appBarAlpha > 0.2 ? SearchType.homeLight : SearchType.home,
+                inputButtonClick: () {},
+                speakButtonClick: () {},
+                defaultText: "网红打卡地，景区，酒店",
+                leftButtonClick: () {},
               ),
             ),
           ),
         ),
-      ),
+        Container(
+          height: _appBarAlpha > 0.2 ? 0.5 : 0,
+          decoration: const BoxDecoration(
+            boxShadow: [
+              BoxShadow(color: Colors.black12, blurRadius: 0.5),
+            ],
+          ),
+        )
+      ],
     );
   }
 }
