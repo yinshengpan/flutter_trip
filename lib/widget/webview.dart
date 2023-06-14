@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_trip/utils/timber.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class WebView extends StatefulWidget {
@@ -21,6 +22,7 @@ class WebView extends StatefulWidget {
 }
 
 class _WebViewState extends State<WebView> {
+  static const String TAG = "WebView";
   String? _pageTitle;
   final GlobalKey webViewKey = GlobalKey();
   InAppWebViewController? _controller;
@@ -79,7 +81,6 @@ class _WebViewState extends State<WebView> {
         dragDx += details.delta.dx;
       },
       onHorizontalDragEnd: (details) {
-        print("startDragDx $startDragDx dragDx $dragDx");
         if (startDragDx < START_DRAG_LIMIT && dragDx > MIN_DRAG_BACK_DX) {
           _handleBack();
         }
@@ -140,11 +141,11 @@ class _WebViewState extends State<WebView> {
         initialUrlRequest: URLRequest(url: Uri.parse(widget.url)),
         initialOptions: options,
         onLoadStart: (controller, url) {
-          print("onLoadStart url $url");
+          Timber.tag(TAG).d("onLoadStart url $url");
         },
         onLoadStop: (controller, url) async {
           String? title = await _controller?.getTitle();
-          print("onLoadStop url $url title $title");
+          Timber.tag(TAG).d("onLoadStop url $url title $title");
           if (widget.title == null) {
             setState(() {
               _pageTitle = title;
@@ -152,20 +153,21 @@ class _WebViewState extends State<WebView> {
           }
         },
         onLoadError: (controller, url, code, message) {
-          print("onLoadError url $url code $code message $message");
+          Timber.tag(TAG).d("onLoadError url $url code $code message $message");
         },
         onLoadHttpError: (controller, url, code, message) {
-          print("onLoadHttpError url $url code $code message $message");
+          Timber.tag(TAG)
+              .d("onLoadHttpError url $url code $code message $message");
         },
         onConsoleMessage: (controller, message) {
-          print("onConsoleMessage message $message");
+          Timber.tag(TAG).d("onConsoleMessage message $message");
         },
         onProgressChanged: (controller, progress) {
-          print("onProgressChanged progress $progress");
+          Timber.tag(TAG).d("onProgressChanged progress $progress");
         },
         shouldOverrideUrlLoading: (controller, navigationAction) async {
           String url = navigationAction.request.url.toString();
-          print("shouldOverrideUrlLoading url $url");
+          Timber.tag(TAG).d("shouldOverrideUrlLoading url $url");
           return NavigationActionPolicy.ALLOW;
         },
         onWebViewCreated: (controller) {
@@ -180,7 +182,7 @@ class _WebViewState extends State<WebView> {
 
   void _handleBack() {
     _controller?.canGoBack().then((canBack) {
-      print("_handleBack canBack $canBack");
+      Timber.tag(TAG).d("_handleBack canBack $canBack");
       if (canBack) {
         _controller?.goBack();
       } else {

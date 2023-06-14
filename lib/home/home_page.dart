@@ -5,6 +5,7 @@ import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 import 'package:flutter_trip/http/dao/crazy_dao.dart';
 import 'package:flutter_trip/http/model/home_model.dart';
 import 'package:flutter_trip/search/search_page.dart';
+import 'package:flutter_trip/utils/timber.dart';
 import 'dart:math' as math;
 
 import 'package:flutter_trip/widget/home_grid_nav.dart';
@@ -88,7 +89,7 @@ class _HomePageState extends State<HomePage> {
         _homeModel = homeModel;
       });
     } catch (e) {
-      print(e);
+      Timber.e(e);
     }
   }
 

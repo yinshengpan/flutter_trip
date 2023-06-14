@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_trip/utils/timber.dart';
 
 class HttpLogInterceptors extends InterceptorsWrapper {
+  static const String TAG = "DioHttp";
   static List<Map?> sHttpResponses = [];
   static List<String?> sResponsesHttpUrl = [];
 
@@ -12,11 +14,11 @@ class HttpLogInterceptors extends InterceptorsWrapper {
 
   @override
   onRequest(RequestOptions options, handler) async {
-    print("请求url：${options.path} ${options.method}");
+    Timber.tag(TAG).d("请求url：${options.path} ${options.method}");
     options.headers.forEach((k, v) => options.headers[k] = v ?? "");
-    print('请求头: ' + options.headers.toString());
+    Timber.tag(TAG).d('请求头: ${options.headers}');
     if (options.data != null) {
-      print('请求参数: ' + options.data.toString());
+      Timber.tag(TAG).d('请求参数: ${options.data}');
     }
     try {
       addLogic(sRequestHttpUrl, options.path);
@@ -34,14 +36,14 @@ class HttpLogInterceptors extends InterceptorsWrapper {
       }
       addLogic(sHttpRequest, map);
     } catch (e) {
-      print(e);
+      Timber.tag(TAG).e(e);
     }
     return super.onRequest(options, handler);
   }
 
   @override
   onResponse(Response response, handler) async {
-    print('返回参数: ' + response.toString());
+    Timber.tag(TAG).d('返回参数: $response');
     switch (response.data) {
       case Map || List:
         {
@@ -71,8 +73,8 @@ class HttpLogInterceptors extends InterceptorsWrapper {
 
   @override
   onError(DioError err, handler) async {
-    print('请求异常: ' + err.toString());
-    print('请求异常信息: ' + (err.response?.toString() ?? ""));
+    Timber.tag(TAG).d('请求异常: $err');
+    Timber.tag(TAG).d('请求异常信息: ${err.response?.toString() ?? ""}');
     try {
       addLogic(sHttpErrorUrl, err.requestOptions.path);
       var errors = Map<String, dynamic>();

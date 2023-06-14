@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_trip/navigator/tab_navigator.dart';
+import 'package:flutter_trip/utils/timber.dart';
 
 void main() {
+  Timber.plant([DebugTree()]);
   runApp(const MyApp());
 }
 
