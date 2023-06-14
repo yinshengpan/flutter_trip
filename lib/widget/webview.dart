@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class WebView extends StatefulWidget {
   final String url;
@@ -48,6 +49,11 @@ class _WebViewState extends State<WebView> {
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.url.startsWith('http')) {
+      Fluttertoast.showToast(msg: '当前链接不支持', toastLength: Toast.LENGTH_SHORT);
+      Navigator.pop(context);
+      return Container();
+    }
     String statusColorStr = widget.statusBarColor ?? 'ffffff';
     Color backColor = statusColorStr == 'ffffff' ? Colors.black : Colors.white;
     Color statusColor = Color(int.parse('0xff$statusColorStr'));

@@ -9,6 +9,6 @@ abstract class TripApi {
   factory TripApi(Dio dio, {String baseUrl}) = _TripApi;
 
   @GET(
-      "/globalsearch/search?source=mobileweb&action=autocomplete&contentType=json")
+      "/globalsearch/search?source=mobileweb&action=mobileweb&contentType=json")
   Future<SearchModel> doSearch(@Query("keyword") String? keyword);
 }

@@ -29,6 +29,11 @@ class SearchItem {
     this.districtname,
     this.url,
     this.isBigIcon,
+    this.price,
+    this.zonename,
+    this.imageUrl,
+    this.subImageUrl,
+    this.star,
   });
 
   String? code;
@@ -37,6 +42,11 @@ class SearchItem {
   String? districtname;
   String? url;
   bool? isBigIcon;
+  String? price;
+  String? zonename;
+  String? imageUrl;
+  String? subImageUrl;
+  String? star;
 
   factory SearchItem.fromJson(Map<String, dynamic> json) =>
       _$SearchItemFromJson(json);

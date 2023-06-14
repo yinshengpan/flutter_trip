@@ -28,6 +28,11 @@ SearchItem _$SearchItemFromJson(Map<String, dynamic> json) => SearchItem(
       districtname: json['districtname'] as String?,
       url: json['url'] as String?,
       isBigIcon: json['isBigIcon'] as bool?,
+      price: json['price'] as String?,
+      zonename: json['zonename'] as String?,
+      imageUrl: json['imageUrl'] as String?,
+      subImageUrl: json['subImageUrl'] as String?,
+      star: json['star'] as String?,
     );
 
 Map<String, dynamic> _$SearchItemToJson(SearchItem instance) =>
@@ -38,4 +43,9 @@ Map<String, dynamic> _$SearchItemToJson(SearchItem instance) =>
       'districtname': instance.districtname,
       'url': instance.url,
       'isBigIcon': instance.isBigIcon,
+      'price': instance.price,
+      'zonename': instance.zonename,
+      'imageUrl': instance.imageUrl,
+      'subImageUrl': instance.subImageUrl,
+      'star': instance.star,
     };

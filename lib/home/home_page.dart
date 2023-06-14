@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 import 'package:flutter_trip/http/dao/crazy_dao.dart';
 import 'package:flutter_trip/http/model/home_model.dart';
+import 'package:flutter_trip/search/search_page.dart';
 import 'dart:math' as math;
 
 import 'package:flutter_trip/widget/home_grid_nav.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_trip/widget/home_sub_nav.dart';
 import 'package:flutter_trip/widget/search_view.dart';
 
 const APPBAR_MAX_SCROLL = 100;
+const SEARCH_HINT = "网红打卡地，景区，酒店";
 
 class HomePage extends StatefulWidget {
   @override
@@ -160,9 +162,18 @@ class _HomePageState extends State<HomePage> {
               child: SearchView(
                 searchType:
                     _appBarAlpha > 0.2 ? SearchType.homeLight : SearchType.home,
-                inputButtonClick: () {},
+                inputButtonClick: () {
+                  Navigator.push(
+                    context,
+                    CupertinoModalPopupRoute(builder: (BuildContext context) {
+                      return const SearchPage(
+                        hint: SEARCH_HINT,
+                      );
+                    }),
+                  );
+                },
                 speakButtonClick: () {},
-                defaultText: "网红打卡地，景区，酒店",
+                defaultText: SEARCH_HINT,
                 leftButtonClick: () {},
               ),
             ),

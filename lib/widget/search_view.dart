@@ -107,7 +107,7 @@ class _SearchViewState extends State<SearchView> {
       children: [
         _wrapTop(
             Container(
-              padding: const EdgeInsets.fromLTRB(6, 5, 10, 5),
+              padding: const EdgeInsets.fromLTRB(20, 5, 10, 5),
               child: widget.hideLeft
                   ? null
                   : const Icon(

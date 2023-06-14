@@ -35,7 +35,7 @@ class _TripApi implements TripApi {
     )
             .compose(
               _dio.options,
-              '/globalsearch/search?source=mobileweb&action=autocomplete&contentType=json',
+              '/globalsearch/search?source=mobileweb&action=mobileweb&contentType=json',
               queryParameters: queryParameters,
               data: _data,
             )
