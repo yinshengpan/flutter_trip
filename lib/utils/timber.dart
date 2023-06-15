@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 class Timber {
   static final Timber _instance = Timber._internal();
 
@@ -104,7 +106,7 @@ class _ForestTree extends Tree {
 class DebugTree extends Tree {
   @override
   void log(Log priority, String? message) {
-    print(message);
+    debugPrint(message);
   }
 }
 
@@ -133,12 +135,14 @@ abstract class Tree {
 
   void _prepareLog(Log priority, dynamic message, [StackTrace? stackTrace]) {
     String date = DateTime.now().toString();
+    // 毫秒只保留三位2023-06-15 10:14:46.511725->2023-06-15 10:14:46.511
+    String formatDate = date.substring(0, date.length - 3);
     String level = "[${priority.value}]";
     String tag = _tag == null ? "" : "[$_tag]";
     _tag = null;
     String msg = message?.toString() ?? "";
     String error = stackTrace == null ? "" : "\n${stackTrace.toString()}";
-    String formatMessage = "$date$level$tag$msg$error";
+    String formatMessage = "$formatDate$level$tag$msg$error";
     log(priority, formatMessage);
   }
 

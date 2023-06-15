@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_trip/http/dao/trip_dao.dart';
 import 'package:flutter_trip/http/model/search_model.dart';
+import 'package:flutter_trip/utils/timber.dart';
 import 'package:flutter_trip/widget/search_view.dart';
 import 'package:flutter_trip/widget/webview.dart';
 
@@ -103,7 +104,7 @@ class _SearchPageState extends State<SearchPage> {
         }
       });
     }).onError((error, stackTrace) {
-      print(error);
+      Timber.e(error, stackTrace);
     });
   }
 

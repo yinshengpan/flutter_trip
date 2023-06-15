@@ -1,95 +1,144 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
-import 'package:flutter_trip/utils/timber.dart';
+import 'package:flutter/cupertino.dart';
 
-class HttpLogInterceptors extends InterceptorsWrapper {
-  static const String TAG = "DioHttp";
-  static List<Map?> sHttpResponses = [];
-  static List<String?> sResponsesHttpUrl = [];
+/// [HttpLogInterceptor] is used to print logs during network requests.
+/// It's better to add [HttpLogInterceptor] to the tail of the interceptor queue,
+/// otherwise the changes made in the interceptor behind A will not be printed out.
+/// This is because the execution of interceptors is in the order of addition.
+class HttpLogInterceptor extends Interceptor {
+  HttpLogInterceptor({
+    this.request = true,
+    this.requestHeader = true,
+    this.requestBody = true,
+    this.responseHeader = true,
+    this.responseBody = true,
+    this.error = true,
+    this.logPrint = _debugPrint,
+  });
 
-  static List<Map<String, dynamic>?> sHttpRequest = [];
-  static List<String?> sRequestHttpUrl = [];
+  /// Print request [Options]
+  bool request;
 
-  static List<Map<String, dynamic>?> sHttpError = [];
-  static List<String?> sHttpErrorUrl = [];
+  /// Print request header [Options.headers]
+  bool requestHeader;
+
+  /// Print request data [Options.data]
+  bool requestBody;
+
+  /// Print [Response.data]
+  bool responseBody;
+
+  /// Print [Response.headers]
+  bool responseHeader;
+
+  /// Print error message
+  bool error;
+
+  int _requestStartTime = 0;
+
+  /// Log printer; defaults print log to console.
+  /// In flutter, you'd better use debugPrint.
+  /// you can also write log in a file, for example:
+  ///```dart
+  ///  final file=File("./log.txt");
+  ///  final sink=file.openWrite();
+  ///  dio.interceptors.add(LogInterceptor(logPrint: sink.writeln));
+  ///  ...
+  ///  await sink.close();
+  ///```
+  void Function(Object object) logPrint;
 
   @override
-  onRequest(RequestOptions options, handler) async {
-    Timber.tag(TAG).d("请求url：${options.path} ${options.method}");
-    options.headers.forEach((k, v) => options.headers[k] = v ?? "");
-    Timber.tag(TAG).d('请求头: ${options.headers}');
-    if (options.data != null) {
-      Timber.tag(TAG).d('请求参数: ${options.data}');
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
+    logPrint('——> ${options.method} ${options.uri}');
+    _requestStartTime = DateTime.now().millisecondsSinceEpoch;
+    if (request) {
+      _printKV('responseType', options.responseType.toString());
+      _printKV('followRedirects', options.followRedirects);
+      _printKV('persistentConnection', options.persistentConnection);
+      _printKV('connectTimeout', options.connectTimeout);
+      _printKV('sendTimeout', options.sendTimeout);
+      _printKV('receiveTimeout', options.receiveTimeout);
+      _printKV(
+        'receiveDataWhenStatusError',
+        options.receiveDataWhenStatusError,
+      );
+      if (options.extra.isNotEmpty) {
+        _printKV('extra', options.extra);
+      }
     }
-    try {
-      addLogic(sRequestHttpUrl, options.path);
-      var data;
-      if (options.data is Map) {
-        data = options.data;
+    if (requestHeader && options.headers.isNotEmpty) {
+      logPrint('headers:');
+      options.headers.forEach((key, v) => _printKV(' $key', v));
+    }
+    if (requestBody && options.data != null) {
+      logPrint('data:');
+      _printAll(options.data);
+    }
+    handler.next(options);
+  }
+
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) async {
+    _printResponse(response);
+    handler.next(response);
+  }
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    if (error) {
+      if (err.response != null) {
+        _printResponse(err.response!);
       } else {
-        data = Map<String, dynamic>();
+        logPrint('<—— Exception ${err.requestOptions.uri}${_getRequestTime()}');
+        logPrint('$err');
+        logPrint("<—— END HTTP ");
       }
-      var map = {
-        "header:": {...options.headers},
-      };
-      if (options.method == "POST") {
-        map["data"] = data;
+    }
+    handler.next(err);
+  }
+
+  void _printResponse(Response response) {
+    String url = response.requestOptions.uri.toString();
+    logPrint('<—— ${response.statusCode} $url${_getRequestTime()}');
+    if (responseHeader) {
+      if (response.isRedirect == true) {
+        _printKV('redirect', response.realUri);
       }
-      addLogic(sHttpRequest, map);
-    } catch (e) {
-      Timber.tag(TAG).e(e);
+
+      logPrint('headers:');
+      response.headers.forEach((key, v) => _printKV(' $key', v.join('\r\n\t')));
     }
-    return super.onRequest(options, handler);
+    String result = response.toString();
+    if (responseBody) {
+      logPrint('');
+      _printAll(result);
+    }
+    logPrint("<—— END HTTP (${utf8.encode(result).length}-byte body)");
   }
 
-  @override
-  onResponse(Response response, handler) async {
-    Timber.tag(TAG).d('返回参数: $response');
-    switch (response.data) {
-      case Map || List:
-        {
-          try {
-            var data = Map<String, dynamic>();
-            data["data"] = response.data;
-            addLogic(sResponsesHttpUrl, response.requestOptions.uri.toString());
-            addLogic(sHttpResponses, data);
-          } catch (e) {
-            print(e);
-          }
-        }
-      case String:
-        {
-          try {
-            var data = Map<String, dynamic>();
-            data["data"] = response.data;
-            addLogic(sResponsesHttpUrl, response.requestOptions.uri.toString());
-            addLogic(sHttpResponses, data);
-          } catch (e) {
-            print(e);
-          }
-        }
-    }
-    return super.onResponse(response, handler);
+  void _printKV(String key, Object? v) {
+    logPrint('$key: $v');
   }
 
-  @override
-  onError(DioError err, handler) async {
-    Timber.tag(TAG).d('请求异常: $err');
-    Timber.tag(TAG).d('请求异常信息: ${err.response?.toString() ?? ""}');
-    try {
-      addLogic(sHttpErrorUrl, err.requestOptions.path);
-      var errors = Map<String, dynamic>();
-      errors["error"] = err.message;
-      addLogic(sHttpError, errors);
-    } catch (e) {
-      print(e);
-    }
-    return super.onError(err, handler);
+  void _printAll(msg) {
+    msg.toString().split('\n').forEach(logPrint);
   }
 
-  static addLogic(List list, data) {
-    if (list.length > 20) {
-      list.removeAt(0);
-    }
-    list.add(data);
+  String _getRequestTime() {
+    int requestTime = DateTime.now().millisecondsSinceEpoch - _requestStartTime;
+    return "(${requestTime}ms)";
   }
+}
+
+void _debugPrint(Object? object) {
+  assert(() {
+    debugPrint(object?.toString());
+    return true;
+  }());
 }
